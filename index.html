@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PING - Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Credit Bhutok -->
+    <div class="credit">
+        PING <span>by Bhutok</span>
+    </div>
+
+    <!-- AUTH PAGE (Login/Register) -->
+    <div id="authPage" class="page active">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="logo">
+                    <span>P</span>
+                </div>
+                <h1>PING Chat</h1>
+                <p class="subtitle">Connect with friends</p>
+
+                <div class="tab-container">
+                    <button class="tab active" id="loginTab" onclick="showLogin()">Login</button>
+                    <button class="tab" id="registerTab" onclick="showRegister()">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <div id="loginForm" class="form-container active">
+                    <div class="input-group">
+                        <label>Username</label>
+                        <input type="text" id="loginUsername" placeholder="Masukkan username">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Masukkan password">
+                    </div>
+                    <button class="btn btn-primary" onclick="handleLogin()">Login</button>
+                    <p class="form-footer">
+                        Belum punya akun? 
+                        <a onclick="showRegister()">Register</a>
+                    </p>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerForm" class="form-container">
+                    <div class="input-group">
+                        <label>Username</label>
+                        <input type="text" id="regUsername" placeholder="Pilih username">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="Buat password">
+                    </div>
+                    <button class="btn btn-primary" onclick="handleRegister()">Register</button>
+                    <p class="form-footer">
+                        Sudah punya akun? 
+                        <a onclick="showLogin()">Login</a>
+                    </p>
+                </div>
+
+                <!-- Notification -->
+                <div id="authMessage" class="auth-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT PAGE -->
+    <div id="chatPage" class="page">
+        <div class="chat-container">
+            <!-- SIDEBAR KIRI -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="profile" onclick="showProfileModal()">
+                        <div class="avatar" id="myAvatar">U</div>
+                        <div class="profile-info">
+                            <h4 id="myName">Loading...</h4>
+                            <p><span class="online-dot"></span> Online</p>
+                        </div>
+                    </div>
+                    <div class="header-icons">
+                        <button class="icon-btn" onclick="showProfileModal()">⚙️</button>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Cari kontak..." onkeyup="searchContacts()">
+                </div>
+
+                <div class="chat-list" id="chatList">
+                    <div class="loading">Memuat kontak...</div>
+                </div>
+            </div>
+
+            <!-- MAIN CHAT AREA -->
+            <div class="main-chat">
+                <!-- Chat Header -->
+                <div class="chat-header" id="chatHeader" style="display: none;">
+                    <div class="chat-header-avatar" id="chatAvatar">A</div>
+                    <div class="chat-header-info">
+                        <h3 id="currentChatName">Pilih Kontak</h3>
+                        <p id="chatStatus"><span class="online-dot"></span> Online</p>
+                    </div>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messagesContainer">
+                    <div class="welcome-message" id="welcomeMessage">
+                        <div class="welcome-icon">👋</div>
+                        <h3>Selamat datang di PING</h3>
+                        <p>Pilih kontak untuk memulai percakapan</p>
+                    </div>
+                </div>
+
+                <!-- Reply Preview -->
+                <div class="reply-preview" id="replyPreview" style="display: none;">
+                    <div class="reply-content">
+                        <span>Membalas: </span>
+                        <span id="replyText"></span>
+                    </div>
+                    <button class="close-reply" onclick="cancelReply()">✕</button>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area" id="inputArea" style="display: none;">
+                    <button class="attach-btn" onclick="attachFile()">📎</button>
+                    <input type="text" id="messageInput" placeholder="Ketik pesan..." 
+                           onkeyup="handleTyping()" onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button class="send-btn" onclick="sendMessage()">➤</button>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Profil Saya</h3>
+                <button class="close-modal" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-avatar-large" id="modalAvatar">U</div>
+                
+                <div class="profile-field">
+                    <label>Username</label>
+                    <input type="text" id="profileUsername" readonly>
+                </div>
+                
+                <div class="profile-field">
+                    <label>User ID</label>
+                    <input type="text" id="profileUserId" readonly>
+                </div>
+                
+                <div class="profile-field">
+                    <label>Status</label>
+                    <select id="profileStatus">
+                        <option value="online">Online</option>
+                        <option value="away">Away</option>
+                        <option value="busy">Busy</option>
+                    </select>
+                </div>
+                
+                <button class="btn-save" onclick="updateProfile()">Update Status</button>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
