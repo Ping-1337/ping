@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PING - Login/Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Logo -->
+            <div class="logo">
+                <h1>PING</h1>
+                <p>simple chat app</p>
+            </div>
+
+            <!-- Tab Login/Register -->
+            <div class="tab-container">
+                <button class="tab active" id="tabLogin" onclick="showLogin()">Login</button>
+                <button class="tab" id="tabRegister" onclick="showRegister()">Register</button>
+            </div>
+
+            <!-- FORM LOGIN -->
+            <div class="form active" id="loginForm">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Masukkan username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password">
+                </div>
+                <button class="btn" onclick="handleLogin()">Login</button>
+                <p class="footer-text">
+                    Belum punya akun? 
+                    <a onclick="showRegister()">Register</a>
+                </p>
+            </div>
+
+            <!-- FORM REGISTER -->
+            <div class="form" id="registerForm">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Pilih username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Buat password">
+                </div>
+                <button class="btn" onclick="handleRegister()">Register</button>
+                <p class="footer-text">
+                    Sudah punya akun? 
+                    <a onclick="showLogin()">Login</a>
+                </p>
+            </div>
+
+            <!-- Pesan Notifikasi -->
+            <div id="messageBox" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Fungsi ganti tab
+        function showLogin() {
+            document.getElementById('tabLogin').classList.add('active');
+            document.getElementById('tabRegister').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('registerForm').classList.remove('active');
+            hideMessage();
+        }
+
+        function showRegister() {
+            document.getElementById('tabRegister').classList.add('active');
+            document.getElementById('tabLogin').classList.remove('active');
+            document.getElementById('registerForm').classList.add('active');
+            document.getElementById('loginForm').classList.remove('active');
+            hideMessage();
+        }
+
+        // Handle Login
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!username || !password) {
+                showMessage('Username dan password harus diisi!', 'error');
+                return;
+            }
+
+            // Login berhasil
+            showMessage('Login berhasil!', 'success');
+            
+            // Redirect ke halaman chat (nanti diisi)
+            // window.location.href = 'chat.html';
+        }
+
+        // Handle Register
+        function handleRegister() {
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            if (!username || !password) {
+                showMessage('Username dan password harus diisi!', 'error');
+                return;
+            }
+
+            if (password.length < 3) {
+                showMessage('Password minimal 3 karakter!', 'error');
+                return;
+            }
+
+            // Registrasi berhasil
+            showMessage('Registrasi berhasil! Silakan login.', 'success');
+            
+            // Reset form
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            
+            // Pindah ke login setelah 1.5 detik
+            setTimeout(showLogin, 1500);
+        }
+
+        // Tampilkan pesan
+        function showMessage(text, type) {
+            const msgBox = document.getElementById('messageBox');
+            msgBox.textContent = text;
+            msgBox.className = 'message ' + type;
+        }
+
+        // Sembunyikan pesan
+        function hideMessage() {
+            document.getElementById('messageBox').className = 'message';
+        }
+    </script>
+</body>
+</html>
