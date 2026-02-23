@@ -12,8 +12,8 @@
         PING <span>by Bhutok</span>
     </div>
 
-    <!-- AUTH PAGE -->
-    <div id="authPage">
+    <!-- AUTH PAGE (HALAMAN LOGIN/REGISTER) -->
+    <div id="authPage" class="page active">
         <div class="auth-card">
             <div class="logo">
                 <span>P</span>
@@ -60,15 +60,15 @@
                 </p>
             </div>
 
-            <!-- Message -->
+            <!-- Pesan Notifikasi -->
             <div id="authMessage" class="auth-message"></div>
         </div>
     </div>
 
-    <!-- CHAT PAGE -->
-    <div id="chatPage">
+    <!-- CHAT PAGE (HALAMAN CHAT) -->
+    <div id="chatPage" class="page">
         <div class="chat-container">
-            <!-- Sidebar -->
+            <!-- Sidebar Kiri -->
             <div class="sidebar">
                 <div class="sidebar-header">
                     <div class="profile" onclick="showProfile()">
@@ -92,9 +92,8 @@
                 </div>
             </div>
 
-            <!-- Main Chat -->
+            <!-- Area Chat Utama -->
             <div class="main-chat">
-                <!-- Chat Header -->
                 <div class="chat-header" id="chatHeader" style="display: none;">
                     <div class="chat-header-avatar" id="chatAvatar">A</div>
                     <div class="chat-header-info">
@@ -103,57 +102,25 @@
                     </div>
                 </div>
 
-                <!-- Messages -->
                 <div class="messages-container" id="messagesContainer">
-                    <div class="welcome-message" id="welcomeMessage">
+                    <div class="welcome-message">
                         <div class="welcome-icon">👋</div>
                         <h3>Selamat datang di PING</h3>
                         <p>Pilih kontak untuk memulai percakapan</p>
                     </div>
                 </div>
 
-                <!-- Input Area -->
                 <div class="input-area" id="inputArea" style="display: none;">
                     <input type="text" id="messageInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()">
                     <button class="send-btn" onclick="sendMessage()">➤</button>
                 </div>
 
-                <!-- Typing Indicator -->
                 <div class="typing-indicator" id="typingIndicator"></div>
             </div>
         </div>
     </div>
 
-    <!-- Profile Modal -->
-    <div id="profileModal" class="modal">
-        <div class="modal-content">
-            <h3>Profil Saya</h3>
-            <div class="profile-avatar-large" id="modalAvatar">U</div>
-            <p><strong>Username:</strong> <span id="profileUsername"></span></p>
-            <p><strong>User ID:</strong> <span id="profileUserId"></span></p>
-            <button class="btn-logout" onclick="logout()">Logout</button>
-            <button class="btn-close" onclick="closeModal()">Tutup</button>
-        </div>
-    </div>
-
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>                </div>
-
-                <!-- Input Area -->
-                <div class="input-area" id="inputArea" style="display: none;">
-                    <input type="text" id="messageInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()">
-                    <button class="send-btn" onclick="sendMessage()">➤</button>
-                </div>
-
-                <!-- Typing Indicator -->
-                <div class="typing-indicator" id="typingIndicator"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profile Modal -->
+    <!-- MODAL PROFIL -->
     <div id="profileModal" class="modal">
         <div class="modal-content">
             <h3>Profil Saya</h3>
