@@ -13,62 +13,60 @@
     </div>
 
     <!-- AUTH PAGE -->
-    <div id="authPage" class="page active">
-        <div class="auth-container">
-            <div class="auth-card">
-                <div class="logo">
-                    <span>P</span>
-                </div>
-                <h1>PING Chat</h1>
-                <p class="subtitle">Connect with friends</p>
-
-                <div class="tab-container">
-                    <button class="tab active" id="loginTab" onclick="showLogin()">Login</button>
-                    <button class="tab" id="registerTab" onclick="showRegister()">Register</button>
-                </div>
-
-                <!-- Login Form -->
-                <div id="loginForm" class="form-container active">
-                    <div class="input-group">
-                        <label>Username</label>
-                        <input type="text" id="loginUsername" placeholder="Masukkan username">
-                    </div>
-                    <div class="input-group">
-                        <label>Password</label>
-                        <input type="password" id="loginPassword" placeholder="Masukkan password">
-                    </div>
-                    <button class="btn btn-primary" onclick="handleLogin()">Login</button>
-                    <p class="form-footer">
-                        Belum punya akun? 
-                        <a onclick="showRegister()">Register</a>
-                    </p>
-                </div>
-
-                <!-- Register Form -->
-                <div id="registerForm" class="form-container">
-                    <div class="input-group">
-                        <label>Username</label>
-                        <input type="text" id="regUsername" placeholder="Pilih username">
-                    </div>
-                    <div class="input-group">
-                        <label>Password</label>
-                        <input type="password" id="regPassword" placeholder="Buat password">
-                    </div>
-                    <button class="btn btn-primary" onclick="handleRegister()">Register</button>
-                    <p class="form-footer">
-                        Sudah punya akun? 
-                        <a onclick="showLogin()">Login</a>
-                    </p>
-                </div>
-
-                <!-- Message -->
-                <div id="authMessage" class="auth-message"></div>
+    <div id="authPage">
+        <div class="auth-card">
+            <div class="logo">
+                <span>P</span>
             </div>
+            <h1>PING Chat</h1>
+            <p class="subtitle">Connect with friends</p>
+
+            <div class="tab-container">
+                <button class="tab active" id="loginTab" onclick="showLogin()">Login</button>
+                <button class="tab" id="registerTab" onclick="showRegister()">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="form-container active">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Masukkan username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password">
+                </div>
+                <button class="btn-primary" onclick="handleLogin()">Login</button>
+                <p class="form-footer">
+                    Belum punya akun? 
+                    <a onclick="showRegister()">Register</a>
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="form-container">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Pilih username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Buat password">
+                </div>
+                <button class="btn-primary" onclick="handleRegister()">Register</button>
+                <p class="form-footer">
+                    Sudah punya akun? 
+                    <a onclick="showLogin()">Login</a>
+                </p>
+            </div>
+
+            <!-- Message -->
+            <div id="authMessage" class="auth-message"></div>
         </div>
     </div>
 
     <!-- CHAT PAGE -->
-    <div id="chatPage" class="page">
+    <div id="chatPage">
         <div class="chat-container">
             <!-- Sidebar -->
             <div class="sidebar">
@@ -113,6 +111,35 @@
                         <p>Pilih kontak untuk memulai percakapan</p>
                     </div>
                 </div>
+
+                <!-- Input Area -->
+                <div class="input-area" id="inputArea" style="display: none;">
+                    <input type="text" id="messageInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button class="send-btn" onclick="sendMessage()">➤</button>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <h3>Profil Saya</h3>
+            <div class="profile-avatar-large" id="modalAvatar">U</div>
+            <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+            <p><strong>User ID:</strong> <span id="profileUserId"></span></p>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-close" onclick="closeModal()">Tutup</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>                </div>
 
                 <!-- Input Area -->
                 <div class="input-area" id="inputArea" style="display: none;">
