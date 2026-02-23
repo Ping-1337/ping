@@ -12,7 +12,7 @@
         PING <span>by Bhutok</span>
     </div>
 
-    <!-- AUTH PAGE (Login/Register) -->
+    <!-- AUTH PAGE -->
     <div id="authPage" class="page active">
         <div class="auth-container">
             <div class="auth-card">
@@ -61,7 +61,7 @@
                     </p>
                 </div>
 
-                <!-- Notification -->
+                <!-- Message -->
                 <div id="authMessage" class="auth-message"></div>
             </div>
         </div>
@@ -70,10 +70,10 @@
     <!-- CHAT PAGE -->
     <div id="chatPage" class="page">
         <div class="chat-container">
-            <!-- SIDEBAR KIRI -->
+            <!-- Sidebar -->
             <div class="sidebar">
                 <div class="sidebar-header">
-                    <div class="profile" onclick="showProfileModal()">
+                    <div class="profile" onclick="showProfile()">
                         <div class="avatar" id="myAvatar">U</div>
                         <div class="profile-info">
                             <h4 id="myName">Loading...</h4>
@@ -81,7 +81,7 @@
                         </div>
                     </div>
                     <div class="header-icons">
-                        <button class="icon-btn" onclick="showProfileModal()">⚙️</button>
+                        <button class="icon-btn" onclick="showProfile()">⚙️</button>
                     </div>
                 </div>
 
@@ -94,7 +94,7 @@
                 </div>
             </div>
 
-            <!-- MAIN CHAT AREA -->
+            <!-- Main Chat -->
             <div class="main-chat">
                 <!-- Chat Header -->
                 <div class="chat-header" id="chatHeader" style="display: none;">
@@ -105,7 +105,7 @@
                     </div>
                 </div>
 
-                <!-- Messages Container -->
+                <!-- Messages -->
                 <div class="messages-container" id="messagesContainer">
                     <div class="welcome-message" id="welcomeMessage">
                         <div class="welcome-icon">👋</div>
@@ -114,20 +114,9 @@
                     </div>
                 </div>
 
-                <!-- Reply Preview -->
-                <div class="reply-preview" id="replyPreview" style="display: none;">
-                    <div class="reply-content">
-                        <span>Membalas: </span>
-                        <span id="replyText"></span>
-                    </div>
-                    <button class="close-reply" onclick="cancelReply()">✕</button>
-                </div>
-
                 <!-- Input Area -->
                 <div class="input-area" id="inputArea" style="display: none;">
-                    <button class="attach-btn" onclick="attachFile()">📎</button>
-                    <input type="text" id="messageInput" placeholder="Ketik pesan..." 
-                           onkeyup="handleTyping()" onkeypress="if(event.key==='Enter') sendMessage()">
+                    <input type="text" id="messageInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()">
                     <button class="send-btn" onclick="sendMessage()">➤</button>
                 </div>
 
@@ -137,43 +126,17 @@
         </div>
     </div>
 
-    <!-- PROFILE MODAL -->
-    <div id="profileModal" class="modal" style="display: none;">
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Profil Saya</h3>
-                <button class="close-modal" onclick="closeModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="profile-avatar-large" id="modalAvatar">U</div>
-                
-                <div class="profile-field">
-                    <label>Username</label>
-                    <input type="text" id="profileUsername" readonly>
-                </div>
-                
-                <div class="profile-field">
-                    <label>User ID</label>
-                    <input type="text" id="profileUserId" readonly>
-                </div>
-                
-                <div class="profile-field">
-                    <label>Status</label>
-                    <select id="profileStatus">
-                        <option value="online">Online</option>
-                        <option value="away">Away</option>
-                        <option value="busy">Busy</option>
-                    </select>
-                </div>
-                
-                <button class="btn-save" onclick="updateProfile()">Update Status</button>
-                <button class="btn-logout" onclick="logout()">Logout</button>
-            </div>
+            <h3>Profil Saya</h3>
+            <div class="profile-avatar-large" id="modalAvatar">U</div>
+            <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+            <p><strong>User ID:</strong> <span id="profileUserId"></span></p>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+            <button class="btn-close" onclick="closeModal()">Tutup</button>
         </div>
     </div>
-
-    <!-- NOTIFICATION TOAST -->
-    <div id="toast" class="toast"></div>
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="script.js"></script>
