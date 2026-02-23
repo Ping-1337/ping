@@ -1,6 +1,6 @@
 // ============ KONFIGURASI ============
-const BACKEND_URL = 'https://ping-chat-backend.pxxi.click'; // Ganti dengan URL backend Anda
-const SOCKET_URL = BACKEND_URL;
+const BACKEND_URL = 'https://ping-chat-backend.pxxl.click'; // Ganti dengan URL backend Anda
+const SOCKET_URL = 'https://ping-chat-backend.pxxl.click';
 
 // ============ STATE ============
 let socket = null;
