@@ -1,6 +1,6 @@
 // ============ KONFIGURASI ============
-const BACKEND_URL = 'https://ping-chat-backend.pxxl.click'; // Ganti dengan URL backend Anda
-const SOCKET_URL = 'https://ping-chat-backend.pxxl.click';
+const BACKEND_URL = 'https://ping-chat-backend.pxxl.click';
+const SOCKET_URL = BACKEND_URL;
 
 // ============ STATE ============
 let socket = null;
@@ -8,24 +8,26 @@ let currentUser = null;
 let contacts = [];
 let currentChat = null;
 let messages = {};
-let replyToMessage = null;
-let typingTimer = null;
 
 // ============ INISIALISASI ============
 document.addEventListener('DOMContentLoaded', () => {
-    // Cek apakah user sudah login
     const savedUser = localStorage.getItem('pingUser');
     if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        document.getElementById('myName').textContent = currentUser.username;
-        document.getElementById('myAvatar').textContent = currentUser.avatar || currentUser.username[0].toUpperCase();
-        document.getElementById('modalAvatar').textContent = currentUser.avatar || currentUser.username[0].toUpperCase();
-        document.getElementById('profileUsername').value = currentUser.username;
-        document.getElementById('profileUserId').value = currentUser.id;
-        
-        showPage('chatPage');
-        connectSocket();
-        loadContacts();
+        try {
+            currentUser = JSON.parse(savedUser);
+            document.getElementById('myName').textContent = currentUser.username;
+            document.getElementById('myAvatar').textContent = currentUser.username[0].toUpperCase();
+            document.getElementById('modalAvatar').textContent = currentUser.username[0].toUpperCase();
+            document.getElementById('profileUsername').textContent = currentUser.username;
+            document.getElementById('profileUserId').textContent = currentUser.id;
+            
+            showPage('chatPage');
+            connectSocket();
+            loadContacts();
+        } catch (e) {
+            localStorage.removeItem('pingUser');
+            showPage('authPage');
+        }
     } else {
         showPage('authPage');
     }
@@ -33,9 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ============ PAGE MANAGEMENT ============
 function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
+    document.getElementById('authPage').classList.remove('active');
+    document.getElementById('chatPage').classList.remove('active');
     document.getElementById(pageId).classList.add('active');
 }
 
@@ -76,25 +77,23 @@ async function handleLogin() {
 
         if (data.success) {
             currentUser = data.user;
-            currentUser.avatar = currentUser.username[0].toUpperCase();
             localStorage.setItem('pingUser', JSON.stringify(currentUser));
             
-            // Update UI
             document.getElementById('myName').textContent = currentUser.username;
-            document.getElementById('myAvatar').textContent = currentUser.avatar;
-            document.getElementById('modalAvatar').textContent = currentUser.avatar;
-            document.getElementById('profileUsername').value = currentUser.username;
-            document.getElementById('profileUserId').value = currentUser.id;
+            document.getElementById('myAvatar').textContent = currentUser.username[0].toUpperCase();
+            document.getElementById('modalAvatar').textContent = currentUser.username[0].toUpperCase();
+            document.getElementById('profileUsername').textContent = currentUser.username;
+            document.getElementById('profileUserId').textContent = currentUser.id;
             
             showPage('chatPage');
             connectSocket();
             loadContacts();
-            showToast('Login berhasil!', 'success');
         } else {
             showAuthMessage(data.error || 'Login gagal', 'error');
         }
     } catch (error) {
         showAuthMessage('Gagal terhubung ke server', 'error');
+        console.error(error);
     }
 }
 
@@ -113,6 +112,239 @@ async function handleRegister() {
     }
 
     try {
+        const response = await fetch(`${BACKEND_URL}/api/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showAuthMessage('Registrasi berhasil! Silakan login.', 'success');
+            setTimeout(() => {
+                showLogin();
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regPassword').value = '';
+            }, 1500);
+        } else {
+            showAuthMessage(data.error || 'Registrasi gagal', 'error');
+        }
+    } catch (error) {
+        showAuthMessage('Gagal terhubung ke server', 'error');
+        console.error(error);
+    }
+}
+
+function showAuthMessage(text, type) {
+    const msgBox = document.getElementById('authMessage');
+    msgBox.textContent = text;
+    msgBox.className = 'auth-message ' + type;
+}
+
+function hideAuthMessage() {
+    document.getElementById('authMessage').className = 'auth-message';
+}
+
+// ============ SOCKET.IO ============
+function connectSocket() {
+    if (!currentUser) return;
+    
+    socket = io(SOCKET_URL, {
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionAttempts: 5
+    });
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        socket.emit('user-login', currentUser.id);
+    });
+
+    socket.on('new-message', (message) => {
+        if (currentChat && currentChat.id === message.from) {
+            addMessage(message);
+        }
+    });
+
+    socket.on('connect_error', (error) => {
+        console.log('Connection error:', error);
+    });
+}
+
+// ============ CONTACTS ============
+async function loadContacts() {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/users/${currentUser.id}`);
+        const data = await response.json();
+
+        if (data.success) {
+            contacts = data.users;
+            displayContacts();
+        }
+    } catch (error) {
+        console.error('Error loading contacts:', error);
+    }
+}
+
+function displayContacts(filter = '') {
+    const chatList = document.getElementById('chatList');
+    
+    let filtered = contacts;
+    if (filter) {
+        filtered = contacts.filter(c => 
+            c.username.toLowerCase().includes(filter.toLowerCase())
+        );
+    }
+
+    if (filtered.length === 0) {
+        chatList.innerHTML = '<div class="loading">Tidak ada kontak</div>';
+        return;
+    }
+
+    let html = '';
+    filtered.forEach(c => {
+        html += `
+            <div class="chat-item" onclick="selectChat(${c.id}, '${c.username}')">
+                <div class="chat-avatar">${c.username[0].toUpperCase()}</div>
+                <div class="chat-info">
+                    <div class="chat-name-time">
+                        <h4>${c.username}</h4>
+                        <span class="time"></span>
+                    </div>
+                    <div class="chat-preview">
+                        <p>${c.isOnline ? 'Online' : 'Offline'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    chatList.innerHTML = html;
+}
+
+function searchContacts() {
+    const query = document.getElementById('searchInput').value;
+    displayContacts(query);
+}
+
+// ============ CHAT FUNCTIONS ============
+function selectChat(userId, username) {
+    currentChat = { id: userId, username: username };
+    
+    document.getElementById('chatHeader').style.display = 'flex';
+    document.getElementById('inputArea').style.display = 'flex';
+    document.getElementById('welcomeMessage').style.display = 'none';
+    
+    document.getElementById('currentChatName').textContent = username;
+    document.getElementById('chatAvatar').textContent = username[0].toUpperCase();
+    
+    // Update active class
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+    
+    loadMessages(userId);
+}
+
+async function loadMessages(userId) {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${BACKEND_URL}/api/messages/${currentUser.id}/${userId}`);
+        const data = await response.json();
+
+        if (data.success) {
+            messages[userId] = data.messages;
+            displayMessages(userId);
+        }
+    } catch (error) {
+        console.error('Error loading messages:', error);
+    }
+}
+
+function displayMessages(userId) {
+    const container = document.getElementById('messagesContainer');
+    const msgList = messages[userId] || [];
+    
+    if (msgList.length === 0) {
+        container.innerHTML = '<div class="welcome-message">Belum ada pesan. Kirim pesan pertama!</div>';
+        return;
+    }
+
+    let html = '';
+    msgList.forEach(msg => {
+        const isOwn = msg.from === currentUser.id;
+        html += `
+            <div class="message ${isOwn ? 'own' : 'other'}">
+                <div class="message-content">
+                    <p>${msg.text}</p>
+                    <span class="message-time">${msg.time || ''}</span>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+    container.scrollTop = container.scrollHeight;
+}
+
+function addMessage(message) {
+    if (!currentChat) return;
+    
+    const msgList = messages[currentChat.id] || [];
+    msgList.push(message);
+    messages[currentChat.id] = msgList;
+    
+    displayMessages(currentChat.id);
+}
+
+function sendMessage() {
+    if (!currentChat || !currentUser) return;
+
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    
+    if (!text) return;
+
+    const message = {
+        from: currentUser.id,
+        to: currentChat.id,
+        text: text,
+        time: new Date().getHours() + ':' + 
+              (new Date().getMinutes() < 10 ? '0' : '') + new Date().getMinutes()
+    };
+
+    if (socket && socket.connected) {
+        socket.emit('send-message', message);
+    }
+
+    const msgList = messages[currentChat.id] || [];
+    msgList.push(message);
+    messages[currentChat.id] = msgList;
+    
+    displayMessages(currentChat.id);
+    input.value = '';
+}
+
+// ============ PROFILE ============
+function showProfile() {
+    document.getElementById('profileModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('profileModal').style.display = 'none';
+}
+
+function logout() {
+    if (socket) socket.disconnect();
+    localStorage.removeItem('pingUser');
+    showPage('authPage');
+    showLogin();
+}    try {
         const response = await fetch(`${BACKEND_URL}/api/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
